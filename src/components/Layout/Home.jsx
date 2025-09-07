@@ -1,8 +1,10 @@
 import React, {useState} from 'react';
 import NavigationSidebar from '../Common/Sidebar';
 import MainContent from '../Common/MainContent';
+import LoginModal from '../Auth/LoginPage';
 import { ChatPanel } from '../Common/ChatPanel';
 import SvgIcon from '../Common/SvgIcons';
+import RightPanel from '../Auth/RightPanel';
 
 const Home = () => {
   const [activeItem, setActiveItem] = useState('chat');
@@ -19,20 +21,8 @@ const Home = () => {
           />
         )}
         <MainContent activeItem={activeItem} />
-        <div className="right-panel fixed top-4 right-4 flex gap-4">
-          <button className='bg-bg-tertiary border-border-custom rounded-lg text-text-primary hover:bg-bg-secondary transition-colors z-50 p-2 flex gap-2 items-center'>
-            Войти
-            <SvgIcon src="/img/user.svg"/>
-          </button>
-          <button
-            onClick={() => document.documentElement.classList.toggle('dark')}
-            className=" p-2 bg-bg-tertiary border border-border-custom rounded-lg text-text-primary hover:bg-bg-secondary transition-colors z-50"
-          >
-            🌙
-          </button>
-          
-        </div>
-        
+        <RightPanel/>
+        <LoginModal />
       </div>
     </>
   )

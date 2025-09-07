@@ -1,5 +1,10 @@
 import React from "react";
+import { useAuth } from "../../context/AuthContext";
+import Account from "../Auth/Account";
 const MainContent = ({ activeItem }) => {
+    const { isLoggedIn, user } = useAuth();
+
+    console.log(isLoggedIn)
     const getContent = () => {
       switch (activeItem) {
         case 'chat':
@@ -51,14 +56,7 @@ const MainContent = ({ activeItem }) => {
           );
         case 'account':
           return (
-            <div className="text-center">
-              <h2 className="text-xl font-medium text-text-primary mb-2">
-                👤 Аккаунт
-              </h2>
-              <p className="text-text-secondary">
-                Настройки вашего аккаунта
-              </p>
-            </div>
+            <Account activeItem={activeItem}/>
           );
         default:
           return (

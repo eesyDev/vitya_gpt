@@ -1,15 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { menuItems } from '../../utils/data';
 import SvgIcon from './SvgIcons';
+import { useAuth } from '../../context/AuthContext';
 
 const NavigationSidebar = ({ activeItem, setActiveItem }) => {
-
+  const { isLoggedIn, openLogin } = useAuth();
   const handleItemClick = (itemId) => {
     setActiveItem(itemId);
     console.log(`Клик на: ${itemId}`);
   };
 
-
+  const handleAccountClick = () => {
+    if (isLoggedIn) {
+      setActiveItem('account');
+    } else {
+      openLogin();
+    }
+  };
   return (
     <div className="w-20 bg-bg-primary flex flex-col h-screen">
       {/* Logo/Brand */}
@@ -34,7 +41,7 @@ const NavigationSidebar = ({ activeItem, setActiveItem }) => {
               {/* Icon */}
               <div className="flex flex-col items-center">
                 {/* <IconComponent size={20} /> */}
-                <div class={`${isActive 
+                <div className={`${isActive 
                   ? 'bg-green-gradient text-white' 
                   : 'text-gray-400 hover:text-white hover:bg-gray-500'} p-2 rounded-md`}>
                     <SvgIcon src={item.icon}/>
@@ -61,7 +68,7 @@ const NavigationSidebar = ({ activeItem, setActiveItem }) => {
           <div className="flex flex-col items-center">
             <SvgIcon src="/img/user.svg"/>
             <span className="text-xs mt-1 text-center">
-              Аккаунт
+            {isLoggedIn ? 'Аккаунт' : 'Войти'}
             </span>
           </div>
         </div>
