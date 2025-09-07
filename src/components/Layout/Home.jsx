@@ -7,13 +7,13 @@ import SvgIcon from '../Common/SvgIcons';
 import RightPanel from '../Auth/RightPanel';
 
 const Home = () => {
-  const [activeItem, setActiveItem] = useState('chat');
-  const [showChatPanel, setShowChatPanel] = useState(true);
+  const [activeItem, setActiveItem] = useState('');
+  const [showChatPanel, setShowChatPanel] = useState(false);
   const shouldShowChatPanel = activeItem === 'chat' && showChatPanel;
   return (
     <>
     <div className="h-screen bg-bg-primary flex">
-        <NavigationSidebar setActiveItem={setActiveItem} activeItem={activeItem} />
+        <NavigationSidebar setActiveItem={setActiveItem} activeItem={activeItem} setShowChatPanel={setShowChatPanel} />
         {shouldShowChatPanel && (
           <ChatPanel 
             isVisible={shouldShowChatPanel}

@@ -3,12 +3,14 @@ import { useAuth } from "../../context/AuthContext";
 import FormInput from "./FormInput";
 import Button from "./Button";
 const LoginModal = () => {
-    const { isLoginOpen, closeLogin, login } = useAuth();
+    const { isLoginOpen, closeLogin, login, logout, register, refreshToken, isLoading } = useAuth();
     const [isLoginMode, setIsLoginMode] = useState(true);
+    const [error, setError] = useState('');
     const [formData, setFormData] = useState({
-      email: '',
-      password: '',
-      confirmPassword: ''
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
     });
   
     const handleInputChange = (e) => {
@@ -16,38 +18,51 @@ const LoginModal = () => {
         ...formData,
         [e.target.name]: e.target.value
       });
+      setError('');
     };
   
-    const handleSubmit = () => {
-      if (isLoginMode) {
-        if (formData.email && formData.password) {
-          login({
-            email: formData.email,
-            name: formData.email.split('@')[0]
-          });
-        }
-      } else {
-        if (formData.password !== formData.confirmPassword) {
-          alert('Пароли не совпадают!');
+    const handleSubmit = async () => {
+        setError('');
+        
+        // Валидация
+        if (!formData.email || !formData.password) {
+          setError('Заполните все поля');
           return;
         }
-        if (formData.email && formData.password) {
-          login({
-            email: formData.email,
-            name: formData.email.split('@')[0]
-          });
+    
+        if (!isLoginMode) {
+            if (!formData.name ) {
+                setError('Заполните все поля');
+                return;
+            }
+          if (formData.password !== formData.confirmPassword) {
+            setError('Пароли не совпадают');
+            return;
+          }
+          if (formData.password.length < 6) {
+            setError('Пароль должен быть не менее 6 символов');
+            return;
+          }
         }
-      }
-    };
+    
+        // Вызываем API
+        const result = isLoginMode 
+          ? await login(formData.email, formData.password)
+          : await register(formData.name, formData.email, formData.password);
+    
+        if (!result.success) {
+          setError(result.error);
+        }
+      };
   
     const toggleMode = () => {
       setIsLoginMode(!isLoginMode);
-      setFormData({ email: '', password: '', confirmPassword: '' });
+      setFormData({ name: '', email: '', password: '', confirmPassword: '' });
     };
   
     const handleClose = () => {
       closeLogin();
-      setFormData({ email: '', password: '', confirmPassword: '' });
+      setFormData({ name: '', email: '', password: '', confirmPassword: '' });
       setIsLoginMode(true);
     };
   
@@ -82,8 +97,22 @@ const LoginModal = () => {
                 }
               </p>
             </div>
-  
+            {/* Ошибка */}
+            {error && (
+                <div className="mb-4 p-3 bg-red-500 bg-opacity-20 border border-red-500 rounded-lg">
+                <p className="text-red-400 text-sm">{error}</p>
+                </div>
+            )}
             <div className="space-y-4">
+            {!isLoginMode && (
+                <FormInput
+                  type="text"
+                  name="name"
+                  placeholder="Ваше имя"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                />
+              )}
               <FormInput
                 type="email"
                 name="email"

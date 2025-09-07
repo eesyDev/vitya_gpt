@@ -3,20 +3,15 @@ import { menuItems } from '../../utils/data';
 import SvgIcon from './SvgIcons';
 import { useAuth } from '../../context/AuthContext';
 
-const NavigationSidebar = ({ activeItem, setActiveItem }) => {
+const NavigationSidebar = ({ activeItem, setActiveItem, setShowChatPanel }) => {
   const { isLoggedIn, openLogin } = useAuth();
   const handleItemClick = (itemId) => {
     setActiveItem(itemId);
-    console.log(`Клик на: ${itemId}`);
-  };
-
-  const handleAccountClick = () => {
-    if (isLoggedIn) {
-      setActiveItem('account');
-    } else {
-      openLogin();
+    if (itemId === 'chat') {
+      setShowChatPanel(true);
     }
   };
+
   return (
     <div className="w-20 bg-bg-primary flex flex-col h-screen">
       {/* Logo/Brand */}
