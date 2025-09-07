@@ -30,8 +30,8 @@ const Account = ({activeItem}) => {
           } else {
             return (
               <div className="text-center">
-                <div className="w-20 h-20 bg-bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
-                  <SvgIcon src="/img/user.svg" className="w-10 h-10" />
+                <div className="w-20 h-20 bg-bg-secondary rounded-full flex items-center justify-center mx-auto mb-4 flex items-center justify-content-center">
+                  <SvgIcon src="/img/user.svg" />
                 </div>
                 <h2 className="text-xl font-medium text-text-primary mb-2">
                   Войдите в аккаунт

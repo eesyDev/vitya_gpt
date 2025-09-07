@@ -30,7 +30,7 @@ const RightPanel = () => {
           </button>
           
           <button
-            onClick={() => document.documentElement.classList.toggle('dark')}
+            onClick={() => document.documentElement.classList.toggle('light')}
             className="p-2 bg-bg-tertiary border border-border-custom rounded-lg text-text-primary hover:bg-bg-secondary transition-colors"
           >
             🌙

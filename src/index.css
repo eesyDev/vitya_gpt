@@ -2,20 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  /* Светлая тема */
-  --bg-primary: #f8fafc;
-  --bg-secondary: #ffffff;
-  --bg-tertiary: #f1f5f9;
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #64748b;
-  --border-color: #e2e8f0;
-  --accent-primary: #0DBE8A;
-  --accent-secondary: #00A38B;
-}
 
-.dark {
+:root {
   /* Темная тема */
   --bg-primary: #181818;
   --bg-secondary: #1f1f1f;
@@ -24,6 +12,19 @@
   --text-secondary: #e2e8f0;
   --text-muted: #94a3b8;
   --border-color: #374151;
+  --accent-primary: #0DBE8A;
+  --accent-secondary: #00A38B;
+}
+
+.light {
+  /* Светлая тема */
+  --bg-primary: #f8fafc;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
   --accent-primary: #0DBE8A;
   --accent-secondary: #00A38B;
 }
