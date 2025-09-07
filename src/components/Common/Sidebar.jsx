@@ -2,8 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { menuItems } from '../../utils/data';
 import SvgIcon from './SvgIcons';
 
-const NavigationSidebar = () => {
-  const [activeItem, setActiveItem] = useState('chat');
+const NavigationSidebar = ({ activeItem, setActiveItem }) => {
 
   const handleItemClick = (itemId) => {
     setActiveItem(itemId);
@@ -40,7 +39,7 @@ const NavigationSidebar = () => {
                   : 'text-gray-400 hover:text-white hover:bg-gray-500'} p-2 rounded-md`}>
                     <SvgIcon src={item.icon}/>
                   </div>
-                <span className="text-[10px] mt-[5px] text-center leading-tight text-primary">
+                <span className="text-[10px] mt-[5px] text-center leading-tight text-text-primary">
                   {item.label}
                 </span>
               </div>
@@ -69,6 +68,7 @@ const NavigationSidebar = () => {
       </div>
     </div>
   );
+  
 };
 
 export default NavigationSidebar;
