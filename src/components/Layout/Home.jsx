@@ -18,6 +18,12 @@ const Home = () => {
           <ChatPanel 
             isVisible={shouldShowChatPanel}
             onClose={() => setShowChatPanel(false)}
+            onChatSelect={
+              (chat) => {
+                console.log('Выбран чат:', chat);
+                // Здесь можете загрузить сообщения чата
+              }
+            }
           />
         )}
         <MainContent activeItem={activeItem} />

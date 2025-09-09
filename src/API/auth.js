@@ -9,8 +9,6 @@ export const authAPI = {
         body: JSON.stringify({ username, email, password }),
       });
       console.log('Отправляем данные:', { username, email, password });
-
-      console.log(response)
       
       if (!response.ok) {
         const error = await response.text();
@@ -20,16 +18,16 @@ export const authAPI = {
       return await response.json();
     },
   
-    login: async (email, password) => {
+    login: async (username, password) => {
       const response = await fetch(`${API_BASE_URL}/auth/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ username, password }),
 
       });
-      
+      console.log('Отправляем данные:', { username, password });
       if (!response.ok) {
         const error = await response.text();
         throw new Error(error || 'Ошибка входа');

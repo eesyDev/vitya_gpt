@@ -1,4 +1,3 @@
-
 import React, { useState, createContext, useContext, useEffect } from 'react';
 import { authAPI } from '../API/auth';
 
@@ -15,8 +14,15 @@ export const AuthProvider = ({ children }) => {
     const savedTokens = localStorage.getItem('tokens');
     
     if (savedUser && savedTokens) {
-      setUser(JSON.parse(savedUser));
-      setTokens(JSON.parse(savedTokens));
+      const parsedTokens = JSON.parse(savedTokens);
+      
+      if (parsedTokens.expiresAt && Date.now() < parsedTokens.expiresAt) {
+        setUser(JSON.parse(savedUser));
+        setTokens(parsedTokens);
+      } else {
+        localStorage.removeItem('user');
+        localStorage.removeItem('tokens');
+      }
     }
   }, []);
 
@@ -25,21 +31,25 @@ export const AuthProvider = ({ children }) => {
     setIsLoading(true);
     try {
       const response = await authAPI.register(username, email, password);
-      console.log(response)
-      const userData = { username, email, password };
-      console.log(userData)
-      setUser(userData);
-      setTokens({
-        accessToken: response.accessToken,
-        refreshToken: response.refreshToken
-      });
       
-      // Сохраняем в localStorage
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('tokens', JSON.stringify({
+      const safeUserData = {
+        id: response.user?.id,
+        username: response.user?.username || username,
+        email: response.user?.email || email,
+        role: response.user?.role
+      };
+      
+      const tokenData = {
         accessToken: response.accessToken,
-        refreshToken: response.refreshToken
-      }));
+        refreshToken: response.refreshToken,
+        expiresAt: Date.now() + 15 * 60 * 1000 // 15 минут
+      };
+      
+      setUser(safeUserData);
+      setTokens(tokenData);
+      
+      localStorage.setItem('user', JSON.stringify(safeUserData));
+      localStorage.setItem('tokens', JSON.stringify(tokenData));
       
       setIsLoginOpen(false);
       return { success: true };
@@ -53,24 +63,26 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Логин
-  const login = async (email, password) => {
+  const login = async (name, password) => {
     setIsLoading(true);
     try {
-      const response = await authAPI.login(email, password);
+      const response = await authAPI.login(name, password);
       
-      const userData = { email, name: email.split('@')[0] };
+      const safeUserData = {
+        name: response.user?.name || name,
+      };
       
-      setUser(userData);
-      setTokens({
+      const tokenData = {
         accessToken: response.accessToken,
-        refreshToken: response.refreshToken
-      });
+        refreshToken: response.refreshToken,
+        expiresAt: Date.now() + 15 * 60 * 1000 // 15 минут
+      };
       
-      localStorage.setItem('user', JSON.stringify(userData));
-      localStorage.setItem('tokens', JSON.stringify({
-        accessToken: response.accessToken,
-        refreshToken: response.refreshToken
-      }));
+      setUser(safeUserData);
+      setTokens(tokenData);
+      
+      localStorage.setItem('user', JSON.stringify(safeUserData));
+      localStorage.setItem('tokens', JSON.stringify(tokenData));
       
       setIsLoginOpen(false);
       return { success: true };
@@ -91,28 +103,44 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem('tokens');
   };
 
-// Обновление токена
-const refreshToken = async () => {
-  if (!tokens?.refreshToken) return { success: false };
-  
-  try {
-    const response = await authAPI.refresh(tokens.refreshToken);
+  // Получение валидного токена
+  const getValidToken = async () => {
+    if (!tokens) return null;
+
+    if (tokens.expiresAt && Date.now() >= tokens.expiresAt) {
+      const refreshResult = await refreshToken();
+      if (!refreshResult.success) {
+        return null;
+      }
+      return tokens.accessToken;
+    }
+
+    return tokens.accessToken;
+  };
+
+  // Обновление токена
+  const refreshToken = async () => {
+    if (!tokens?.refreshToken) return { success: false };
     
-    const newTokens = {
-      accessToken: response.accessToken,
-      refreshToken: response.refreshToken || tokens.refreshToken
-    };
-    
-    setTokens(newTokens);
-    localStorage.setItem('tokens', JSON.stringify(newTokens));
-    
-    return { success: true };
-  } catch (error) {
-    console.error('Ошибка обновления токена:', error);
-    logout(); // Выходим если не можем обновить токен
-    return { success: false, error: error.message };
-  }
-};
+    try {
+      const response = await authAPI.refresh(tokens.refreshToken);
+      
+      const newTokens = {
+        accessToken: response.accessToken,
+        refreshToken: response.refreshToken || tokens.refreshToken,
+        expiresAt: Date.now() + 15 * 60 * 1000 // 15 минут
+      };
+      
+      setTokens(newTokens);
+      localStorage.setItem('tokens', JSON.stringify(newTokens));
+      
+      return { success: true };
+    } catch (error) {
+      console.error('Ошибка обновления токена:', error);
+      logout(); // Выходим если не можем обновить токен
+      return { success: false, error: error.message };
+    }
+  };
 
   const openLogin = () => {
     setIsLoginOpen(true);
@@ -130,20 +158,21 @@ const refreshToken = async () => {
       login,
       logout,
       refreshToken,
+      getValidToken, // Новый метод для получения валидного токена
       isLoginOpen,
       openLogin,
-      closeLogin
+      closeLogin,
+      isLoading
     }}>
       {children}
     </AuthContext.Provider>
   );
 };
 
-
 export const useAuth = () => {
-    const context = useContext(AuthContext);
-    if (!context) {
-      throw new Error('useAuth must be used within AuthProvider');
-    }
-    return context;
-  };
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+};

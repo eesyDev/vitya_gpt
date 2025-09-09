@@ -1,25 +1,16 @@
 import React from "react";
 import { useAuth } from "../../context/AuthContext";
 import Account from "../Auth/Account";
-const MainContent = ({ activeItem }) => {
+import ChatInterface from "../Chat/ChatInterface";
+const MainContent = ({ activeItem, activeChat }) => {
     const { isLoggedIn, user } = useAuth();
 
-    console.log(isLoggedIn)
+    console.log(activeChat)
     const getContent = () => {
       switch (activeItem) {
         case 'chat':
           return (
-            <div className="text-center">
-              <div className="w-20 h-20 bg-bg-secondary rounded-full flex items-center justify-center mx-auto mb-4">
-                <div className="w-10 h-10 bg-text-muted rounded opacity-40"></div>
-              </div>
-              <h2 className="text-xl font-medium text-text-primary mb-2">
-                Добро пожаловать в чаты
-              </h2>
-              <p className="text-text-secondary">
-                Выберите чат или создайте новый
-              </p>
-            </div>
+            <ChatInterface activeChat={activeChat} />
           );
         case 'search':
           return (
@@ -70,7 +61,7 @@ const MainContent = ({ activeItem }) => {
     };
   
     return (
-      <div className="flex-1 bg-bg-primary flex items-center justify-center p-8">
+      <div className="flex-1 bg-bg-primary flex items-center justify-center p-16">
         {getContent()}
       </div>
     );

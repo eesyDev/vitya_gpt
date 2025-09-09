@@ -25,16 +25,18 @@ const LoginModal = () => {
         setError('');
         
         // Валидация
-        if (!formData.email || !formData.password) {
+
+        if (!formData.username ) {
           setError('Заполните все поля');
+          console.log(formData)
           return;
-        }
+      }
     
         if (!isLoginMode) {
-            if (!formData.name ) {
-                setError('Заполните все поля');
-                return;
-            }
+          if (!formData.email || !formData.password) {
+            setError('Заполните все поля');
+            return;
+          }
           if (formData.password !== formData.confirmPassword) {
             setError('Пароли не совпадают');
             return;
@@ -47,8 +49,8 @@ const LoginModal = () => {
     
         // Вызываем API
         const result = isLoginMode 
-          ? await login(formData.email, formData.password)
-          : await register(formData.name, formData.email, formData.password);
+          ? await login(formData.username, formData.password)
+          : await register(formData.username, formData.email, formData.password);
     
         if (!result.success) {
           setError(result.error);
@@ -57,12 +59,12 @@ const LoginModal = () => {
   
     const toggleMode = () => {
       setIsLoginMode(!isLoginMode);
-      setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+      setFormData({ username: '', email: '', password: '', confirmPassword: '' });
     };
   
     const handleClose = () => {
       closeLogin();
-      setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+      setFormData({ username: '', email: '', password: '', confirmPassword: '' });
       setIsLoginMode(true);
     };
   
@@ -104,23 +106,24 @@ const LoginModal = () => {
                 </div>
             )}
             <div className="space-y-4">
-            {!isLoginMode && (
+            
                 <FormInput
                   type="text"
-                  name="name"
+                  name="username"
                   placeholder="Ваше имя"
-                  value={formData.name}
+                  value={formData.username}
+                  onChange={handleInputChange}
+                />
+              
+              {!isLoginMode && (
+                <FormInput
+                  type="email"
+                  name="email"
+                  placeholder="Почта"
+                  value={formData.email}
                   onChange={handleInputChange}
                 />
               )}
-              <FormInput
-                type="email"
-                name="email"
-                placeholder="Почта"
-                value={formData.email}
-                onChange={handleInputChange}
-              />
-  
               <FormInput
                 type="password"
                 name="password"
