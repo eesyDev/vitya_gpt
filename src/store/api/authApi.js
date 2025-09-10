@@ -10,16 +10,21 @@ const authApi = createApi({
   tagTypes: ['Auth'],
   
   endpoints: (builder) => ({
-    // Регистрация
     register: builder.mutation({
       query: ({ username, email, password }) => ({
         url: '/reg',
         method: 'POST',
         body: { username, email, password }
-      })
+      }),
+      transformResponse: (response, meta, arg) => {
+        // Добавляем username из аргументов запроса
+        return {
+          ...response,
+          username: arg.username
+        };
+      }
     }),
     
-    // Логин
     login: builder.mutation({
       query: ({ username, password }) => ({
         url: '/login',
@@ -28,7 +33,6 @@ const authApi = createApi({
       })
     }),
     
-    // Обновление токена
     refreshToken: builder.mutation({
       query: ({ refreshToken }) => ({
         url: '/refresh',

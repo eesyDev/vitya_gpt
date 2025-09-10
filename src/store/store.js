@@ -10,5 +10,11 @@ export const store = configureStore({
     auth: authReducer,
   },
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(chatApi.middleware),
+  getDefaultMiddleware({
+    serializableCheck: {
+      ignoredActions: ['persist/PERSIST']
+    }
+  })
+  .concat(chatApi.middleware)
+  .concat(authApi.middleware),
 });

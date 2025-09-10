@@ -7,6 +7,7 @@ import { selectUser, selectIsLoggedIn, logout, openLoginModal } from "../../stor
 export const ChatPanel = ({ isVisible, onClose, onChatSelect }) => {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
+  const isLoggedIn = useSelector(selectIsLoggedIn);
 
   const { 
     data: chats = [], 
@@ -16,21 +17,22 @@ export const ChatPanel = ({ isVisible, onClose, onChatSelect }) => {
   } = useGetChatsQuery(undefined, {
     skip: !isVisible || !user
   });
-
-console.log(chats)
   
   const [createChat, { 
     isLoading: isCreatingChat, 
     error: createError 
   }] = useCreateChatMutation();
-  console.log('User ID при создании:', user?.id);
-console.log('User data:', user);
   // Локальные состояния для формы
   const [isCreating, setIsCreating] = useState(false);
   const [newChatName, setNewChatName] = useState('');
 
   // Создание нового чата
   const handleCreateChat = async () => {
+    if (!isLoggedIn) {
+      dispatch(openLoginModal()); 
+      console.log(isLoggedIn)
+      return;
+    }
     if (!newChatName.trim()) return;
 
     try {
@@ -39,7 +41,6 @@ console.log('User data:', user);
         idUser: user.id
       }).unwrap();
 	  refetch();
-      // Устанавливаем новый чат как активный
       dispatch(setActiveChat(newChat));
       
       // Уведомляем родительский компонент
@@ -92,7 +93,13 @@ console.log('User data:', user);
         {/* New Chat Section */}
         {!isCreating ? (
           <button 
-            onClick={() => setIsCreating(true)}
+          onClick={() => {
+            if (!isLoggedIn) {
+              dispatch(openLoginModal());
+              return;
+            }
+            setIsCreating(true);
+          }}
             className="w-full bg-bg-tertiary hover:bg-bg-primary border border-border-custom rounded-lg p-3 flex items-center justify-between text-text-secondary hover:text-text-primary transition-colors"
           >
             <span>Создать новый чат</span>

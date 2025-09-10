@@ -6,7 +6,6 @@ const RightPanel = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const isLoggedIn = useSelector(selectIsLoggedIn);
-
   const handleAuthClick = () => {
     if (isLoggedIn) {
       dispatch(logout());

@@ -7,7 +7,6 @@ import ChatInterface from "../Chat/ChatInterface";
 const MainContent = ({ activeItem, activeChat }) => {
     const isLoggedIn = useSelector(selectIsLoggedIn);
     const user = useSelector(selectUser);
-    console.log(activeChat)
     const getContent = () => {
       switch (activeItem) {
         case 'chat':

@@ -1,3 +1,4 @@
+// store/slices/authSlice.js
 import { createSlice } from '@reduxjs/toolkit';
 import authApi from '../api/authApi';
 
@@ -90,13 +91,16 @@ const authSlice = createSlice({
       authApi.endpoints.register.matchFulfilled,
       (state, action) => {
         const response = action.payload;
+        console.log('Register response:', response); // Для отладки
         
         const safeUserData = {
-          id: response.id,
-          username: response.user?.username,
-          email: response.user?.email,
-          role: response.user?.role
+          id: response.id || response.user?.id,
+          username: response.username || response.user?.username,
+          email: response.email || response.user?.email,
+          role: response.role || response.user?.role
         };
+        
+        console.log('Сохраняем пользователя после регистрации:', safeUserData); // Для отладки
         
         const tokenData = {
           accessToken: response.token,
