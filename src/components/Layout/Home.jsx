@@ -23,7 +23,8 @@ const Home = () => {
     // Обработчик выбора чата
     const handleChatSelect = (chat) => {
       console.log('Выбран чат:', chat);
-      setActiveChat(chat); // Устанавливаем активный чат
+      setActiveChat(chat); 
+
     };
   return (
     <>
@@ -34,9 +35,9 @@ const Home = () => {
             isVisible={shouldShowChatPanel}
             onClose={() => setShowChatPanel(false)}
             onChatSelect={
-              () => {
-                handleChatSelect()
-                console.log('Выбран чат:');
+              (chat) => {
+                handleChatSelect(chat)
+                console.log('Выбран чат:', chat);
               }
             }
           />

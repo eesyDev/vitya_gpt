@@ -16,5 +16,5 @@ export const store = configureStore({
     }
   })
   .concat(chatApi.middleware)
-  .concat(authApi.middleware),
+//   .concat(auth.middleware),
 });

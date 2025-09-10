@@ -15,20 +15,37 @@ const ChatInterface = ({ activeChat }) => {
       timestamp: new Date()
     };
 
-    console.log(userMessage)
+    
 
     setMessages(prev => [...prev, userMessage]);
     setMessage('');
     setIsLoading(true);
-
+    const botResponses = [
+      "Привет, кожаный мешок! Как дела в мире органики?",
+      "Йоу, мазафакер! Готов к интеллектуальной битве?",
+      "Здарова, углеродная форма жизни!",
+      "Приветствую, биологическая единица!",
+      "Эй, человечишка, что будем обсуждать?",
+      "Салют, мясной компьютер!",
+      "Хай, двуногий! Включаем мозги?",
+      "Здорово, потомок обезьян!",
+      "Привет, носитель ДНК!",
+      "Йо, белковая структура! Поговорим?"
+    ];
     // Имитация ответа бота
     setTimeout(() => {
+      console.log('Генерируем ответ бота'); 
+      const randomResponse = botResponses[Math.floor(Math.random() * botResponses.length)];
+      console.log('Выбранный ответ:', randomResponse); 
+      
       const botMessage = {
         id: Date.now() + 1,
-        text: "Это ответ от Kotler AI. Здесь будет логика обработки вашего сообщения.",
+        text: randomResponse, 
         sender: 'bot',
         timestamp: new Date()
       };
+      
+      console.log('Добавляем сообщение бота:', botMessage); 
       setMessages(prev => [...prev, botMessage]);
       setIsLoading(false);
     }, 1500);
@@ -44,49 +61,49 @@ const ChatInterface = ({ activeChat }) => {
   // Если нет активного чата, показываем стартовую страницу
   if (!activeChat) {
     return (
-        <div className="flex-1 flex flex-col h-full justify-center">
-          {/* Центрированный заголовок */}
-          <div className="flex items-center justify-center">
-            <div className="text-center">
-              <h2 className="text-xl font-medium text-text-primary mb-2">
-                Начните новый чат Kotler
-              </h2>
-            </div>
-          </div>
-  
-          {/* Поле ввода внизу */}
-          <div className="p-4 w-full max-w-[800px] ml-auto mr-auto mt-4">
-            <div className="relative">
-              <input
-                type="text"
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                onKeyPress={handleKeyPress}
-                placeholder="Спросите что-нибудь..."
-                className="w-full bg-bg-secondary border border-border-custom rounded-full py-4 px-6 pr-14 text-text-primary placeholder-text-muted focus:outline-none focus:border-green-500 transition-colors"
-              />
-              <button
-                onClick={handleSendMessage}
-                disabled={!message.trim() || isLoading}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-green-gradient rounded-full flex items-center justify-center hover:opacity-80 transition-opacity disabled:opacity-40"
-              >
-                <svg 
-                  width="16" 
-                  height="16" 
-                  viewBox="0 0 24 24" 
-                  fill="none" 
-                  stroke="currentColor" 
-                  strokeWidth="2"
-                  className="text-white"
-                >
-                  <line x1="22" y1="2" x2="11" y2="13"></line>
-                  <polygon points="22,2 15,22 11,13 2,9 22,2"></polygon>
-                </svg>
-              </button>
-            </div>
+      <div className="flex-1 flex flex-col h-full">
+        {/* Центрированный заголовок */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <h2 className="text-xl font-medium text-text-primary mb-2">
+              Начните новый чат Kotler
+            </h2>
           </div>
         </div>
-      );
+
+        {/* Поле ввода внизу */}
+        <div className="p-4">
+          <div className="relative">
+            <input
+              type="text"
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Спросите что-нибудь..."
+              className="w-full bg-bg-secondary border border-border-custom rounded-full py-4 px-6 pr-14 text-text-primary placeholder-text-muted focus:outline-none focus:border-green-500 transition-colors"
+            />
+            <button
+              onClick={handleSendMessage}
+              disabled={!message.trim() || isLoading}
+              className="absolute right-3 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-green-gradient rounded-full flex items-center justify-center hover:opacity-80 transition-opacity disabled:opacity-40"
+            >
+              <svg 
+                width="16" 
+                height="16" 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2"
+                className="text-white"
+              >
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22,2 15,22 11,13 2,9 22,2"></polygon>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Если есть активный чат, показываем интерфейс чата
