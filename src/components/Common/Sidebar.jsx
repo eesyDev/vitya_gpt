@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { selectUser, selectIsLoggedIn, logout, openLoginModal } from "../../store/slices/authSlice";
 import { menuItems } from '../../utils/data';
 import SvgIcon from './SvgIcons';
-import { useAuth } from '../../context/AuthContext';
 
 const NavigationSidebar = ({ activeItem, setActiveItem, setShowChatPanel }) => {
-  const { isLoggedIn, openLogin } = useAuth();
+  const isLoggedIn = useSelector(selectIsLoggedIn);
   const handleItemClick = (itemId) => {
     setActiveItem(itemId);
     if (itemId === 'chat') {

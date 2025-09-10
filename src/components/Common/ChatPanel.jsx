@@ -1,13 +1,12 @@
 import React, { useState } from "react";
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useGetChatsQuery, useCreateChatMutation } from '../../store/api/chatApi';
 import { setActiveChat } from '../../store/slices/chatSlice';
-import { useAuth } from "../../context/AuthContext";
+import { selectUser, selectIsLoggedIn, logout, openLoginModal } from "../../store/slices/authSlice";
 
 export const ChatPanel = ({ isVisible, onClose, onChatSelect }) => {
   const dispatch = useDispatch();
-  const { user } = useAuth();
-
+  const user = useSelector(selectUser);
 
   const { 
     data: chats = [], 

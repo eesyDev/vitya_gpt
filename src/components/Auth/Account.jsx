@@ -1,9 +1,12 @@
 import React from 'react';
-import { useAuth } from '../../context/AuthContext';
+import { useSelector, useDispatch } from 'react-redux';
 import SvgIcon from '../Common/SvgIcons';
+import { selectUser, selectIsLoggedIn, logout, openLoginModal } from "../../store/slices/authSlice";
 
 const Account = ({activeItem}) => {
-    const { isLoggedIn, user, openLogin } = useAuth();
+  const dispatch = useDispatch();
+  const user = useSelector(selectUser);
+  const isLoggedIn = useSelector(selectIsLoggedIn);
     const getContent = () => {
           if (isLoggedIn) {
             return (
@@ -40,7 +43,7 @@ const Account = ({activeItem}) => {
                   Для доступа к настройкам профиля необходимо войти в систему
                 </p>
                 <button 
-                    onClick={openLogin}
+                    onClick={() => dispatch(openLoginModal())}
                     class="w-full py-3 rounded-lg font-medium transition-all duration-200 bg-green-gradient text-white hover:opacity-90 mt-6">Войти</button>
               </div>
             );

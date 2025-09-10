@@ -1,10 +1,12 @@
 import React from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useSelector, useDispatch } from 'react-redux';
+import { selectUser, selectIsLoggedIn, logout, openLoginModal } from "../../store/slices/authSlice";
 import Account from "../Auth/Account";
 import ChatInterface from "../Chat/ChatInterface";
-const MainContent = ({ activeItem, activeChat }) => {
-    const { isLoggedIn, user } = useAuth();
 
+const MainContent = ({ activeItem, activeChat }) => {
+    const isLoggedIn = useSelector(selectIsLoggedIn);
+    const user = useSelector(selectUser);
     console.log(activeChat)
     const getContent = () => {
       switch (activeItem) {
