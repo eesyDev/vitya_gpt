@@ -3,7 +3,7 @@ import { authAPI } from '../API/auth';
 
 const AuthContext = createContext();
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children, setActiveItem }) => {
   const [user, setUser] = useState(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [tokens, setTokens] = useState(null);
@@ -33,25 +33,27 @@ export const AuthProvider = ({ children }) => {
       const response = await authAPI.register(username, email, password);
       
       const safeUserData = {
-        id: response.user?.id,
+        id: response?.id,
         username: response.user?.username || username,
         email: response.user?.email || email,
-        role: response.user?.role
       };
       
       const tokenData = {
-        accessToken: response.accessToken,
-        refreshToken: response.refreshToken,
+        id: response?.id,
+        accessToken: response?.token,
+        refreshToken: response?.refreshToken,
         expiresAt: Date.now() + 15 * 60 * 1000 // 15 минут
       };
       
       setUser(safeUserData);
       setTokens(tokenData);
       
-      localStorage.setItem('user', JSON.stringify(safeUserData));
       localStorage.setItem('tokens', JSON.stringify(tokenData));
       
       setIsLoginOpen(false);
+      if (setActiveItem) {
+        setActiveItem('chat');
+      }
       return { success: true };
       
     } catch (error) {
@@ -69,22 +71,26 @@ export const AuthProvider = ({ children }) => {
       const response = await authAPI.login(name, password);
       
       const safeUserData = {
-        name: response.user?.name || name,
+        id: response?.id,
+        name: response?.name || name,
       };
       
       const tokenData = {
-        accessToken: response.accessToken,
-        refreshToken: response.refreshToken,
-        expiresAt: Date.now() + 15 * 60 * 1000 // 15 минут
+        id: response?.id,
+        accessToken: response?.token,
+        refreshToken: response?.refreshToken,
+        expiresAt: Date.now() + 60 * 24 * 60 * 1000 //1 день
       };
       
       setUser(safeUserData);
       setTokens(tokenData);
-      
       localStorage.setItem('user', JSON.stringify(safeUserData));
       localStorage.setItem('tokens', JSON.stringify(tokenData));
       
       setIsLoginOpen(false);
+      if (setActiveItem) {
+        setActiveItem('chat');
+      }
       return { success: true };
       
     } catch (error) {
@@ -128,7 +134,7 @@ export const AuthProvider = ({ children }) => {
       const newTokens = {
         accessToken: response.accessToken,
         refreshToken: response.refreshToken || tokens.refreshToken,
-        expiresAt: Date.now() + 15 * 60 * 1000 // 15 минут
+        expiresAt: Date.now() + 60 * 24 * 60 * 1000 //1day
       };
       
       setTokens(newTokens);

@@ -9,7 +9,15 @@ import RightPanel from '../Auth/RightPanel';
 const Home = () => {
   const [activeItem, setActiveItem] = useState('');
   const [showChatPanel, setShowChatPanel] = useState(false);
+  const [activeChat, setActiveChat] = useState(null);
+
   const shouldShowChatPanel = activeItem === 'chat' && showChatPanel;
+
+    // Обработчик выбора чата
+    const handleChatSelect = (chat) => {
+      console.log('Выбран чат:', chat);
+      setActiveChat(chat); // Устанавливаем активный чат
+    };
   return (
     <>
     <div className="h-screen bg-bg-primary flex">
@@ -19,14 +27,14 @@ const Home = () => {
             isVisible={shouldShowChatPanel}
             onClose={() => setShowChatPanel(false)}
             onChatSelect={
-              (chat) => {
-                console.log('Выбран чат:', chat);
-                // Здесь можете загрузить сообщения чата
+              () => {
+                handleChatSelect()
+                console.log('Выбран чат:');
               }
             }
           />
         )}
-        <MainContent activeItem={activeItem} />
+        <MainContent activeItem={activeItem} activeChat={activeChat} />
         <RightPanel/>
         <LoginModal />
       </div>

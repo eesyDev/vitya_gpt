@@ -15,6 +15,8 @@ const ChatInterface = ({ activeChat }) => {
       timestamp: new Date()
     };
 
+    console.log(userMessage)
+
     setMessages(prev => [...prev, userMessage]);
     setMessage('');
     setIsLoading(true);
@@ -53,7 +55,7 @@ const ChatInterface = ({ activeChat }) => {
           </div>
   
           {/* Поле ввода внизу */}
-          <div className="p-4 w-full">
+          <div className="p-4 w-full max-w-[800px] ml-auto mr-auto mt-4">
             <div className="relative">
               <input
                 type="text"
