@@ -1,11 +1,11 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-// const API_BASE_URL = 'http://89.111.169.135:8080';
+const API_BASE_URL = 'http://89.111.169.135:8080';
 
 const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `/api/auth`,
+    baseUrl: `${API_BASE_URL}/auth`,
   }),
   tagTypes: ['Auth'],
   
