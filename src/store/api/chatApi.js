@@ -60,7 +60,11 @@ const chatApi = createApi({
       query: ({ chatId, message }) => ({
         url: `/chats/${chatId}/messages`,
         method: 'POST',
-        body: { message }
+        body: {
+          chatId: chatId,
+          messageType: "USER_MESSAGE",
+          messageText: message
+        }
       }),
       invalidatesTags: (result, error, { chatId }) => [
         { type: 'Message', id: chatId }
@@ -73,7 +77,8 @@ const chatApi = createApi({
           chatApi.util.updateQueryData('getChatMessages', chatId, (draft) => {
             draft.push({
               id: Date.now(), // временный ID
-              message,
+              messageText: message,
+              messageType: 'USER_MESSAGE',
               sender: 'user',
               timestamp: new Date().toISOString(),
               isOptimistic: true

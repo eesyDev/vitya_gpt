@@ -168,7 +168,7 @@ export const ChatPanel = ({ isVisible, onClose, onChatSelect }) => {
             </div>
           ) : (
             <div className="space-y-2">
-              {chats.map((chat) => (
+              {chats.slice().reverse().map((chat) => (
                 <div
                   key={chat.id}
                   onClick={() => handleSelectChat(chat)}

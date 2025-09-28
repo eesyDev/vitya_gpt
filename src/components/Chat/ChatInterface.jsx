@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useGetChatMessagesQuery, useSendMessageMutation } from '../../store/api/chatApi';
+import { useGetChatMessagesQuery, useSendMessageMutation } from '../../store/api/chatApi'; // укажи правильный путь
 
 const ChatInterface = ({ activeChat }) => {
   const [message, setMessage] = useState('');
@@ -10,26 +10,31 @@ const ChatInterface = ({ activeChat }) => {
     isLoading: messagesLoading,
     isError: messagesError
   } = useGetChatMessagesQuery(activeChat?.id, {
-    skip: !activeChat?.id, // пропускаем запрос если нет активного чата
+    skip: !activeChat?.id, // если нет активного чата
     pollingInterval: 5000, // опционально: обновляем каждые 5 секунд
   });
   
-  // Мутация для отправки сообщений
   const [sendMessageMutation, { isLoading: isSending }] = useSendMessageMutation();
 
   const handleSendMessage = async () => {
     if (!message.trim() || !activeChat?.id) return;
 
+    const messageText = message.trim();
+    setMessage(''); // Очищаем поле сразу для лучшего UX
+
     try {
-      await sendMessageMutation({
+      const result = await sendMessageMutation({
         chatId: activeChat.id,
-        message: message.trim()
+        message: messageText
       }).unwrap();
       
-      setMessage('');
+      console.log('Сообщение отправлено:', result);
     } catch (error) {
       console.error('Ошибка отправки сообщения:', error);
-      // Можно показать toast с ошибкой
+      
+      setMessage(messageText);
+      
+      alert('Не удалось отправить сообщение. Попробуйте еще раз.');
     }
   };
 
@@ -40,7 +45,20 @@ const ChatInterface = ({ activeChat }) => {
     }
   };
 
-  // Если нет активного чата, показываем стартовую страницу
+  // функция для автоматической прокрутки к последнему сообщению
+  const scrollToBottom = () => {
+    const messagesContainer = document.querySelector('.messages-container');
+    if (messagesContainer) {
+      messagesContainer.scrollTop = messagesContainer.scrollHeight;
+    }
+  };
+
+  React.useEffect(() => {
+    if (messages.length > 0) {
+      setTimeout(scrollToBottom, 100);
+    }
+  }, [messages.length]);
+
   if (!activeChat) {
     return (
       <div className="flex-1 flex flex-col h-full">
@@ -99,7 +117,7 @@ const ChatInterface = ({ activeChat }) => {
       </div>
 
       {/* Сообщения */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 messages-container">
         {messagesLoading ? (
           <div className="text-center py-8">
             <p className="text-text-muted">Загружаем сообщения...</p>
@@ -130,7 +148,7 @@ const ChatInterface = ({ activeChat }) => {
                     : 'bg-bg-secondary text-text-primary'
                 } ${msg.isOptimistic ? 'opacity-50' : ''}`}
               >
-                <p className="text-sm">{msg.message || msg.text}</p>
+                <p className="text-sm">{msg.messageText || msg.message || msg.text}</p>
               </div>
             </div>
           ))
