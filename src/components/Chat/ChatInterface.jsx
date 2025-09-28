@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useGetChatMessagesQuery, useSendMessageMutation } from '../../store/api/chatApi'; // укажи правильный путь
+import { useGetChatMessagesQuery, useSendMessageMutation } from '../../store/api/chatApi'; 
 
 const ChatInterface = ({ activeChat }) => {
   const [message, setMessage] = useState('');
@@ -11,7 +11,7 @@ const ChatInterface = ({ activeChat }) => {
     isError: messagesError
   } = useGetChatMessagesQuery(activeChat?.id, {
     skip: !activeChat?.id, // пропускаем запрос если нет активного чата
-    pollingInterval: 5000, // опционально: обновляем каждые 5 секунд
+    // pollingInterval: 5000, // опционально: обновляем каждые 5 секунд
   });
   
   // Мутация для отправки сообщений
@@ -157,9 +157,9 @@ const ChatInterface = ({ activeChat }) => {
                 >
                   <p className="text-sm">{msg.messageText}</p>
                   {/* Временно для отладки - покажем тип сообщения */}
-                  {/* <span className="text-xs opacity-70 block mt-1">
+                  <span className="text-xs opacity-70 block mt-1">
                     {msg.messageType}
-                  </span> */}
+                  </span>
                 </div>
               </div>
             );
