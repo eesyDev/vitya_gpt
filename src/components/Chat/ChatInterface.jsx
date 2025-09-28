@@ -10,10 +10,11 @@ const ChatInterface = ({ activeChat }) => {
     isLoading: messagesLoading,
     isError: messagesError
   } = useGetChatMessagesQuery(activeChat?.id, {
-    skip: !activeChat?.id, // если нет активного чата
+    skip: !activeChat?.id, // пропускаем запрос если нет активного чата
     pollingInterval: 5000, // опционально: обновляем каждые 5 секунд
   });
   
+  // Мутация для отправки сообщений
   const [sendMessageMutation, { isLoading: isSending }] = useSendMessageMutation();
 
   const handleSendMessage = async () => {
@@ -32,8 +33,10 @@ const ChatInterface = ({ activeChat }) => {
     } catch (error) {
       console.error('Ошибка отправки сообщения:', error);
       
+      // Возвращаем текст в поле если произошла ошибка
       setMessage(messageText);
       
+      // Можно показать уведомление об ошибке
       alert('Не удалось отправить сообщение. Попробуйте еще раз.');
     }
   };
@@ -45,7 +48,7 @@ const ChatInterface = ({ activeChat }) => {
     }
   };
 
-  // функция для автоматической прокрутки к последнему сообщению
+  // Дополнительная функция для автоматической прокрутки к последнему сообщению
   const scrollToBottom = () => {
     const messagesContainer = document.querySelector('.messages-container');
     if (messagesContainer) {
@@ -53,12 +56,14 @@ const ChatInterface = ({ activeChat }) => {
     }
   };
 
+  // Прокручиваем вниз при получении новых сообщений
   React.useEffect(() => {
     if (messages.length > 0) {
       setTimeout(scrollToBottom, 100);
     }
   }, [messages.length]);
 
+  // Если нет активного чата, показываем стартовую страницу
   if (!activeChat) {
     return (
       <div className="flex-1 flex flex-col h-full">
@@ -136,22 +141,29 @@ const ChatInterface = ({ activeChat }) => {
             </p>
           </div>
         ) : (
-          messages.map((msg) => (
-            <div
-              key={msg.id}
-              className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
+          messages.map((msg) => {
+            const isUserMessage = msg.messageType === 'USER_MESSAGE';
+            return (
               <div
-                className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                  msg.sender === 'user'
-                    ? 'bg-green-gradient text-white'
-                    : 'bg-bg-secondary text-text-primary'
-                } ${msg.isOptimistic ? 'opacity-50' : ''}`}
+                key={msg.id}
+                className={`flex ${isUserMessage ? 'justify-end' : 'justify-start'}`}
               >
-                <p className="text-sm">{msg.messageText || msg.message || msg.text}</p>
+                <div
+                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                    isUserMessage
+                      ? 'bg-green-gradient text-white'
+                      : 'bg-bg-secondary text-text-primary'
+                  } ${msg.isOptimistic ? 'opacity-50' : ''}`}
+                >
+                  <p className="text-sm">{msg.messageText}</p>
+                  {/* Временно для отладки - покажем тип сообщения */}
+                  {/* <span className="text-xs opacity-70 block mt-1">
+                    {msg.messageType}
+                  </span> */}
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
 
         {isSending && (
