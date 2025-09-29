@@ -5,7 +5,7 @@ const API_BASE_URL = 'http://89.111.169.135:8080';
 const chatApi = createApi({
   reducerPath: 'chatApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${API_BASE_URL}/api`,
+    baseUrl: `/api/api`,
     prepareHeaders: (headers, { getState }) => {
         const data = localStorage.getItem('tokens');
         const parsedTokens = JSON.parse(data);

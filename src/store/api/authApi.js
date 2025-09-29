@@ -5,7 +5,7 @@ const API_BASE_URL = 'http://89.111.169.135:8080';
 const authApi = createApi({
   reducerPath: 'authApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${API_BASE_URL}/auth`,
+    baseUrl: `/api/auth`,
   }),
   tagTypes: ['Auth'],
   
