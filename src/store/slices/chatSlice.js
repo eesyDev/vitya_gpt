@@ -12,17 +12,34 @@ const chatSlice = createSlice({
   name: 'chat',
   initialState,
   reducers: {
+    // setActiveChat: (state, action) => {
+    //   state.chats.forEach(chat => chat.isActive = false);
+      
+    //   // Находим и активируем выбранный чат
+    //   const chat = state.chats.find(c => c.id === action.payload.id);
+    //   if (chat) {
+    //     chat.isActive = true;
+    //     state.activeChat = action.payload;
+    //   }
+    // },
     setActiveChat: (state, action) => {
+      // Деактивируем все чаты
       state.chats.forEach(chat => chat.isActive = false);
       
-      // Находим и активируем выбранный чат
-      const chat = state.chats.find(c => c.id === action.payload.id);
-      if (chat) {
-        chat.isActive = true;
-        state.activeChat = action.payload;
+      // Находим чат в массиве
+      const existingChat = state.chats.find(c => c.id === action.payload.id);
+      
+      if (existingChat) {
+        // Если чат уже есть - активируем его
+        existingChat.isActive = true;
+      } else {
+        // Если чата нет - добавляем его в массив
+        state.chats.push({ ...action.payload, isActive: true });
       }
+      
+      // В любом случае устанавливаем как активный
+      state.activeChat = action.payload;
     },
-    
     clearActiveChat: (state) => {
       state.chats.forEach(chat => chat.isActive = false);
       state.activeChat = null;
@@ -46,7 +63,7 @@ const chatSlice = createSlice({
     // Обработка результатов RTK Query будет здесь
   }
 });
-
+export const selectActiveChat = (state) => state.chat.activeChat;
 export const { 
   setActiveChat, 
   clearActiveChat, 

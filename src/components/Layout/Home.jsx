@@ -6,12 +6,14 @@ import LoginModal from '../Auth/LoginPage';
 import { ChatPanel } from '../Common/ChatPanel';
 import RightPanel from '../Auth/RightPanel';
 import { restoreAuth, selectShouldRedirectToChat, clearRedirect } from '../../store/slices/authSlice';
+import { setActiveChat, selectActiveChat } from '../../store/slices/chatSlice';
 
 const Home = () => {
   const dispatch = useDispatch()
   const [activeItem, setActiveItem] = useState('chat');
   const [showChatPanel, setShowChatPanel] = useState(false);
-  const [activeChat, setActiveChat] = useState(null);
+  // const [activeChat, setActiveChat] = useState(null);
+  const activeChat = useSelector(selectActiveChat);
 
   const shouldShowChatPanel = activeItem === 'chat' && showChatPanel;
 
@@ -23,8 +25,7 @@ const Home = () => {
     // Обработчик выбора чата
     const handleChatSelect = (chat) => {
       console.log('Выбран чат:', chat);
-      setActiveChat(chat); 
-
+      dispatch(setActiveChat(chat)); //dispatch вместо setState
     };
   return (
     <>

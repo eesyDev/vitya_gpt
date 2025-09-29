@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
-import { useGetChatMessagesQuery, useSendMessageMutation } from '../../store/api/chatApi'; 
+import { useGetChatMessagesQuery, useSendMessageMutation, useCreateChatMutation } from '../../store/api/chatApi'; 
+import { useSelector } from 'react-redux';
+import { selectUser } from '../../store/slices/authSlice';
 
-const ChatInterface = ({ activeChat }) => {
+const ChatInterface = ({ activeChat, onChatCreated }) => {
   const [message, setMessage] = useState('');
+  const user = useSelector(selectUser);
   
   // Получаем сообщения через RTK Query
   const {
@@ -10,22 +13,43 @@ const ChatInterface = ({ activeChat }) => {
     isLoading: messagesLoading,
     isError: messagesError
   } = useGetChatMessagesQuery(activeChat?.id, {
-    skip: !activeChat?.id, // пропускаем запрос если нет активного чата
-    // pollingInterval: 5000, // опционально: обновляем каждые 5 секунд
+    skip: !activeChat?.id
   });
   
   // Мутация для отправки сообщений
   const [sendMessageMutation, { isLoading: isSending }] = useSendMessageMutation();
+  
+  // Мутация для создания нового чата
+  const [createChatMutation, { isLoading: isCreatingChat }] = useCreateChatMutation();
 
   const handleSendMessage = async () => {
-    if (!message.trim() || !activeChat?.id) return;
+    if (!message.trim()) return;
 
     const messageText = message.trim();
     setMessage(''); // Очищаем поле сразу для лучшего UX
 
     try {
+      let chatId = activeChat?.id;
+      
+      // Если нет активного чата, создаем новый
+      if (!chatId) {
+        const newChat = await createChatMutation({
+          chatName: messageText.length > 50 ? messageText.slice(0, 50) + '...' : messageText,
+          idUser: user.id
+        }).unwrap();
+        
+        chatId = newChat.id;
+        console.log('Создан новый чат:', newChat);
+        
+        // Уведомляем родительский компонент о создании чата
+        if (onChatCreated) {
+          onChatCreated(newChat);
+        }
+      }
+
+      // Отправляем сообщение в чат
       const result = await sendMessageMutation({
-        chatId: activeChat.id,
+        chatId: chatId,
         message: messageText
       }).unwrap();
       
@@ -89,7 +113,7 @@ const ChatInterface = ({ activeChat }) => {
             />
             <button
               onClick={handleSendMessage}
-              disabled={!message.trim() || isSending}
+              disabled={!message.trim() || isSending || isCreatingChat}
               className="absolute right-3 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-green-gradient rounded-full flex items-center justify-center hover:opacity-80 transition-opacity disabled:opacity-40"
             >
               <svg 
@@ -153,20 +177,16 @@ const ChatInterface = ({ activeChat }) => {
                     isUserMessage
                       ? 'bg-green-gradient text-white'
                       : 'bg-bg-secondary text-text-primary'
-                  } ${msg.isOptimistic ? 'opacity-50' : ''}`}
+                  }`}
                 >
                   <p className="text-sm">{msg.messageText}</p>
-                  {/* Временно для отладки - покажем тип сообщения */}
-                  <span className="text-xs opacity-70 block mt-1">
-                    {msg.messageType}
-                  </span>
                 </div>
               </div>
             );
           })
         )}
 
-        {isSending && (
+        {(isSending || isCreatingChat) && (
           <div className="flex justify-start">
             <div className="bg-bg-secondary text-text-primary max-w-xs lg:max-w-md px-4 py-2 rounded-2xl">
               <div className="flex space-x-1">
@@ -192,7 +212,7 @@ const ChatInterface = ({ activeChat }) => {
           />
           <button
             onClick={handleSendMessage}
-            disabled={!message.trim() || isSending}
+            disabled={!message.trim() || isSending || isCreatingChat}
             className="absolute right-2 top-1/2 transform -translate-y-1/2 w-8 h-8 bg-green-gradient rounded-full flex items-center justify-center hover:opacity-80 transition-opacity disabled:opacity-40"
           >
             <svg 
